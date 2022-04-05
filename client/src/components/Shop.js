@@ -1,11 +1,12 @@
 import React from 'react';
-import Heading from "./Heading";
+import Header from "./Header";
 
-const Shop = () => {
+const Shop = ({user,setUser}) => {
 
     return (
         <div>
-            <Heading/>
+            {/* // TODO if we randomly open page, login won't be there by default */}
+            <Header user={user}/>
             <p>
                 Shop
             </p>
