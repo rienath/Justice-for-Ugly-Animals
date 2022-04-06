@@ -1,6 +1,7 @@
 // TODO login max size (backend and front handling)
+// TODO password min size
 import React, {useState} from 'react';
-import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Landing from "./components/Landing";
 import Main from "./components/Main";
 import Profile from "./components/Profile";
@@ -11,11 +12,11 @@ import Shop from "./components/Shop";
 const App = () => {
 
     // Current user
-    const [user,setUser] = useState({
-        _id:'',
-        username:'',
-        email:'',
-        privilege:''
+    const [user, setUser] = useState({
+        _id: '',
+        username: '',
+        email: '',
+        privilege: ''
     });
 
     return (
