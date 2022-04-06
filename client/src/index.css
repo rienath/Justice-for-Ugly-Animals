@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+div {
+    white-space: break-spaces;
+    word-wrap: anywhere;
+}
