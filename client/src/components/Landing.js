@@ -24,7 +24,7 @@ const Landing = () => {
         if(isRegister) {
             api.register(formData)
                 .then(({data}) => {
-                    localStorage.setItem("token",JSON.stringify(data.result));
+                    localStorage.setItem("token",data.result);
                     navigate('/main');
                 })
                 .catch((err) => {
