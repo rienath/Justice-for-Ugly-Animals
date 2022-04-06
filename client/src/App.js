@@ -1,5 +1,6 @@
 // TODO login max size (backend and front handling)
 // TODO password min size
+
 import React, {useState} from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Landing from "./components/Landing";
@@ -25,7 +26,7 @@ const App = () => {
                 <Route index element={<Landing/>}/>
                 <Route path="/main" element={<Main user={user} setUser={setUser}/>}>
                     <Route path="profile" element={<Profile/>}/>
-                    <Route index element={<Comments/>}/>
+                    <Route index element={<Comments user={user}/>}/>
                 </Route>
                 <Route path="shop" element={<Shop user={user}/>}/>
             </Routes>
