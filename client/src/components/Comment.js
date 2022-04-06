@@ -78,7 +78,7 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
                 <div className="flex justify-between">
                     <h5 className="text-black text-sm mb-1"><b>{comment.from}</b> {showDateDifference()} </h5>
                     {// Show edit and delete buttons only the user who made the comment
-                        user._id === comment.userID ? <div>
+                        user._id === comment.userID || user.privilege === 'admin' ? <div>
                             <button onClick={handleCommentEdit}
                                     className="p-1 w-fit mx-1 text-indigo-600 text-center align-middle border border-solid border-indigo-600 rounded-full hover:bg-indigo-600 hover:text-white transition-colors duration-300">
                                 <MdModeEditOutline/>
