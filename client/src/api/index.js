@@ -10,6 +10,18 @@ API.interceptors.request.use((req) => {
     return req;
 });
 
+// Response interceptor. If token expired, log user out
+API.interceptors.response.use((response) => {
+    return response
+}, async function (error) {
+    const originalRequest = error.config;
+    if (error.response.status === 401) {
+        localStorage.clear();
+        window.location.reload()
+    }
+    return Promise.reject(error);
+});
+
 // API calls
 export const login = (formData) => API.post('/user/login', formData);
 export const register = (formData) => API.post('/user/register', formData);
