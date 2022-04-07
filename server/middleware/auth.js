@@ -11,8 +11,7 @@ const auth = async (req, res, next) => {
         req.privilege = decodedData?.privilege
         next();
     } catch (error) {
-        // TODO should there be some return to user?
-        console.log(error);
+        return res.status(401).json("Token expired")
     }
 };
 
