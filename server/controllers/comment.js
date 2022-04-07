@@ -4,9 +4,15 @@ import {DateTime} from "luxon";
 /* Create a comment */
 export const createComment = async (req, res) => {
     try {
-        const {comment, reply} = req.body;
+        const {comment, replyID} = req.body;
+
+        // Make new comment. If replyID exists, get it's string
         const newComment = await Comment.create({
-            userID: req.userID, comment, from: req.username, timeCreated: DateTime.now(), reply: reply ? reply : '',
+            userID: req.userID,
+            comment: comment,
+            from: req.username,
+            timeCreated: DateTime.now(),
+            replyID: replyID ? replyID : '',
         })
 
         return res.status(201).json({
@@ -21,9 +27,13 @@ export const createComment = async (req, res) => {
 }
 
 /* Return comments */
-export const getAllComments = async (req, res) => {
+export const getComments = async (req, res) => {
     try {
-        const allComments = await Comment.find().sort({timeCreated: -1});
+        const allComments = await Comment.find({replyID: ''}).sort({timeCreated: -1});
+        // Loop through the comments and add their replies to the request
+        for (let i = 0; i < allComments.length; i++) {
+            allComments[i].replies = await Comment.find({replyID: allComments[i]._id}).sort({timeCreated: -1});
+        }
         return res.status(200).json({allComments});
     } catch (err) {
         console.log(err);
@@ -33,7 +43,6 @@ export const getAllComments = async (req, res) => {
 
 
 /* Delete a comment */
-// TODO handle deleting child comments
 export const deleteComment = async (req, res) => {
     try {
         const {commentID} = req.params;
@@ -52,7 +61,8 @@ export const deleteComment = async (req, res) => {
 
         // Delete
         await Comment.deleteOne({_id: commentID})
-        return res.status(204).json({});
+        await Comment.deleteMany({replyID: commentID}) // Delete all child comments if it has any
+        return res.status(204).json();
 
     } catch (err) {
         console.log(err);
@@ -69,7 +79,6 @@ export const editComment = async (req, res) => {
     const filter = {_id: body._id};
     const comment = await Comment.findOne(filter);
 
-    // TODO refactor
     // If comment not found, return 404
     if (!comment) {
         return res.status(404).json({message: 'Comment not found'});

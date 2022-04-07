@@ -4,8 +4,7 @@ import {MdModeEditOutline} from "react-icons/md";
 import {RiDeleteBinFill} from "react-icons/ri";
 import {DateTime} from "luxon";
 import {deleteComment, editComment} from "../api";
-// TODO edit front
-// TODO edit back
+import Reply from "./Reply";
 
 /* A single comment component */
 const Comment = ({comment, allComments, setAllComments, user}) => {
@@ -13,6 +12,7 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
     const [commentText, setCommentText] = useState(comment.comment);
     const [commentID] = useState(comment._id);
     const [editing, setEditing] = useState(false); // True if we are in editing regime
+    const [replies, setReplies] = useState(comment.replies);
 
     // Calculate how long ago the comment was made
     const showDateDifference = () => {
@@ -41,14 +41,12 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
     const handleCommentDelete = async () => {
         const data = await deleteComment(commentID);
         const temp = allComments.slice();
-        // TODO delete replies too
         // Delete the comment
         const arr = temp.filter((comment) => comment._id !== commentID);
         setAllComments(arr);
         // TODO: get error messages
         console.log(data.data);
     }
-
 
     // Edit the comment
     const handleCommentEdit = async () => {
@@ -66,38 +64,49 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
     }
 
 
-    return (<div className="border border-green-200 bg-green-50 py-2 rounded-md">
-        <div className="flex flex-row items-center">
-            <div className="px-4">
-                <button className="w-10 h-10 bg-yellow-200 align-middle hover:bg-yellow-300 duration-300">
-                    <h5 className="text-black text-sm text-center"><b>{comment.rating}</b></h5>
-                </button>
-            </div>
-
-            <div className="w-full">
-                <div className="flex justify-between">
-                    <h5 className="text-black text-sm mb-1"><b>{comment.from}</b> {showDateDifference()} </h5>
-                    {// Show edit and delete buttons only the user who made the comment
-                        user._id === comment.userID || user.privilege === 'admin' ? <div>
-                            <button onClick={handleCommentEdit}
-                                    className="p-1 w-fit mx-1 text-indigo-600 text-center align-middle border border-solid border-indigo-600 rounded-full hover:bg-indigo-600 hover:text-white transition-colors duration-300">
-                                <MdModeEditOutline/>
-                            </button>
-                            <button onClick={handleCommentDelete}
-                                    className="p-1 w-fit mx-1 text-red-500 text-center align-middle border border-solid border-red-500 rounded-full hover:bg-red-500 hover:text-white transition-colors duration-300">
-                                <RiDeleteBinFill/>
-                            </button>
-                        </div> : <></>}
+    return (<div className="pt-1 pb-1.5">
+        <div className="border border-green-200 bg-green-50 py-2 rounded-md">
+            <div className="flex flex-row items-center">
+                <div className="px-4">
+                    <button className="w-10 h-10 bg-yellow-200 align-middle hover:bg-yellow-300 duration-300">
+                        <h5 className="text-black text-sm text-center"><b>{comment.rating}</b></h5>
+                    </button>
                 </div>
 
-                <div className="pt-0.5">
-                    {editing ? <textarea className="text-sm w-full leading-6" onChange={handleCommentChange}
-                                         value={commentText}/> : <div className="text-sm w-full leading-6">
-                        {commentText}
-                    </div>}
+                <div className="w-full">
+                    <div className="flex justify-between">
+                        <h5 className="text-black text-sm mb-1"><b>{comment.from}</b> {showDateDifference()} </h5>
+                        {// Show edit and delete buttons only the user who made the comment
+                            user._id === comment.userID || user.privilege === 'admin' ? <div>
+                                <button onClick={handleCommentEdit}
+                                        className="p-1 w-fit mx-1 text-indigo-600 text-center align-middle border border-solid border-indigo-600 rounded-full hover:bg-indigo-600 hover:text-white transition-colors duration-300">
+                                    <MdModeEditOutline/>
+                                </button>
+                                <button onClick={handleCommentDelete}
+                                        className="p-1 w-fit mx-1 text-red-500 text-center align-middle border border-solid border-red-500 rounded-full hover:bg-red-500 hover:text-white transition-colors duration-300">
+                                    <RiDeleteBinFill/>
+                                </button>
+                            </div> : <></>}
+                    </div>
+
+                    <div className="pt-0.5">
+                        {editing ? <textarea className="text-sm w-full leading-6" onChange={handleCommentChange}
+                                             value={commentText}/> : <div className="text-sm w-full leading-6">
+                            {commentText}
+                        </div>}
+                    </div>
                 </div>
             </div>
         </div>
+        {comment.replyID === '' ? <div className="pl-16 md:pl-24">
+            {/* If this is slave comment, it will have replyID, and we won't need to display replies*/}
+            <Reply replyID={comment._id} replies={replies} setReplies={setReplies}/>
+            <div className="py-4">
+                {/* Send replies as comments as we want child comments to update in the same way */}
+                {replies.map((reply) => (<Comment key={reply._id} comment={reply} allComments={replies}
+                                                          setAllComments={setReplies} user={user}/>))}
+            </div>
+        </div> : <></>}
     </div>)
 }
 

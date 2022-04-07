@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import WritePost from "./WritePost";
 import Comment from "./Comment";
-import Reply from "./Reply";
-import {getAllComments} from "../api";
+import {getComments} from "../api";
 
 /* Component with the comments section */
 const Comments = ({user}) => {
@@ -11,7 +10,7 @@ const Comments = ({user}) => {
 
     // Get the comments
     useEffect(() => {
-        getAllComments().then((res) => setAllComments(res.data.allComments))
+        getComments().then((res) => setAllComments(res.data.allComments))
             .then((err) => console.log(err));
     }, []);
 
@@ -21,11 +20,6 @@ const Comments = ({user}) => {
             {allComments.map((comment) => (<Comment key={comment._id} comment={comment} allComments={allComments}
                                                     setAllComments={setAllComments} user={user}/>))}
             {/*TODO Replies might need to go inside the individual comments*/}
-            <div className="pl-16 md:pl-24">
-                <Reply replyID={6}/>
-                <div className="pt-4">
-                </div>
-            </div>
         </div>
     </>)
 }
