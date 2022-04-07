@@ -19,8 +19,7 @@ const Reply = ({replyID, replies, setReplies}) => {
         temp.unshift(data.data.newComment);
         setReplies(temp);
         setNewReply({...newReply, comment: ''}); // Reset comment on submit
-        // //TODO: get error message if any and output the same as in login screen
-        // console.log(data.data);
+        // TODO: get error message if any and output the same as in login screen
     }
 
     return (<div className="pt-2 text-gray-400 flex flex-row">

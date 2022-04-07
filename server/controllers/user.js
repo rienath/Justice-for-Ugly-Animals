@@ -10,7 +10,7 @@ export const login = async (req, res) => {
     try {
         // Check if user exists
         const existingUser = await UserModel.findOne({email});
-        if (!existingUser) return res.status(404).json({ message: "User not found"});
+        if (!existingUser) return res.status(404).json({message: "User not found"});
         // Check if credentials are correct
         const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
         if (!isPasswordCorrect) return res.status(400).json({message: "Invalid credentials"});
@@ -20,7 +20,8 @@ export const login = async (req, res) => {
             email: existingUser.email,
             username: existingUser.username,
             privilege: existingUser.privilege,
-            _id: existingUser._id}, process.env.JWT_SECRET, {expiresIn: "24h"});
+            _id: existingUser._id
+        }, process.env.JWT_SECRET, {expiresIn: "24h"});
 
         res.status(200).json({result: token});
     } catch (err) {
@@ -36,8 +37,8 @@ export const register = async (req, res) => {
         // Check if email or username already exist
         const existingEmail = await UserModel.findOne({email});
         const existingLogin = await UserModel.findOne({username});
-        if (existingEmail) return res.status(400).json({ message: "User already exists" });
-        if (existingLogin) return res.status(400).json({ message: "Username is taken" });
+        if (existingEmail) return res.status(400).json({message: "User already exists"});
+        if (existingLogin) return res.status(400).json({message: "Username is taken"});
 
         // Encrypt password
         const hashedPassword = await bcrypt.hash(password, 12);
@@ -45,10 +46,8 @@ export const register = async (req, res) => {
         const result = await UserModel.create({email, username: username, password: hashedPassword});
         // Token
         const token = jwt.sign({
-            email: result.email,
-            username: result.username,
-            privilege: result.privilege,
-            _id: result._id}, process.env.JWT_SECRET, {expiresIn: "24h"});
+            email: result.email, username: result.username, privilege: result.privilege, _id: result._id
+        }, process.env.JWT_SECRET, {expiresIn: "24h"});
 
         res.status(201).json({result: token});
     } catch (error) {

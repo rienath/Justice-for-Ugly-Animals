@@ -104,7 +104,7 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
             <div className="py-4">
                 {/* Send replies as comments as we want child comments to update in the same way */}
                 {replies.map((reply) => (<Comment key={reply._id} comment={reply} allComments={replies}
-                                                          setAllComments={setReplies} user={user}/>))}
+                                                  setAllComments={setReplies} user={user}/>))}
             </div>
         </div> : <></>}
     </div>)
