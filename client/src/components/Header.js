@@ -7,7 +7,6 @@ const Header = ({user}) => {
 
     const navigate = useNavigate();
 
-    // Handlers
     // Hamburger menu on small screen
     let collapse = document.querySelector("#navbar-collapse");
     const handleHamburger = () => {
@@ -31,11 +30,15 @@ const Header = ({user}) => {
         navigate('/shop')
     }
 
-    // Logout
     const handleLogOut = (e) => {
         e.preventDefault();
-        localStorage.clear();
+        localStorage.clear(); // Delete token
         navigate('/');
+    }
+
+    const handleProfile = (e) => {
+        e.preventDefault();
+        navigate('/main/profile');
     }
 
     return (
@@ -43,7 +46,7 @@ const Header = ({user}) => {
             <div className="container px-4 mx-auto md:flex md:items-center">
 
                 <div className="flex justify-between items-center">
-                    <a href="" onClick={handleLogo} className="font-bold text-xl text-indigo-600">Love for the
+                    <a href="/#" onClick={handleLogo} className="font-bold text-xl text-indigo-600">Love for the
                         Uglies</a>
                     <button
                         className="border border-solid border-gray-600 px-3 py-1 rounded text-gray-600 hover:opacity-50 md:hidden"
@@ -61,18 +64,18 @@ const Header = ({user}) => {
                     {
                         user.username ?
                             <>
-                                <a href=""
+                                <a href="/#" onClick={handleProfile}
                                    className="p-2 lg:px-4 md:mx-2 text-center hover:opacity-50 transition-colors duration-300 mt-1 md:mt-0 md:ml-1">{user.username}</a>
-                                <a href="" onClick={handleLogOut}
+                                <a href="/#" onClick={handleLogOut}
                                    className="p-2 lg:px-4 md:mx-2 text-red-500 text-center border border-solid border-red-500 rounded hover:bg-red-500 hover:text-white transition-colors duration-300 mt-1 md:mt-0 md:ml-1">Log
                                     out</a>
                             </>
                             :
-                            <a href="" onClick={handleSignUp}
+                            <a href="/#" onClick={handleSignUp}
                                className="p-2 lg:px-4 md:mx-2 text-indigo-600 text-center border border-solid border-indigo-600 rounded hover:bg-indigo-600 hover:text-white transition-colors duration-300 mt-1 md:mt-0 md:ml-1">Sign
                                 up</a>
                     }
-                    <a href="#" onClick={handleShop}
+                    <a href="/#" onClick={handleShop}
                        className="p-3 w-fit md:mx-2 text-indigo-600 text-center align-middle border border-solid border-indigo-600 rounded-full hover:bg-indigo-600 hover:text-white transition-colors duration-300 mt-1 md:mt-0 md:ml-1">
                         <svg className="flex-1 w-4 h-4 fill-current" viewBox="0 0 24 24">
                             <path
