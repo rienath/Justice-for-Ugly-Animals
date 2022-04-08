@@ -1,5 +1,6 @@
 import Comment from '../models/comment.js';
 import {DateTime} from "luxon";
+import Likes from "../models/likes.js";
 
 /* Create a comment */
 export const createComment = async (req, res) => {
@@ -59,8 +60,14 @@ export const deleteComment = async (req, res) => {
             return res.status(403).json({message: 'Access denied'});
         }
 
-        // Delete
-        await Comment.deleteOne({_id: commentID})
+        // Delete everything associated with the comment
+        await Comment.deleteOne({_id: commentID}) // Delete the comment
+        await Likes.deleteMany({commentID}) // Delete all likes associated with that comment
+        const allComments = await Comment.find({replyID: commentID}) // Find all replies that comment had if any
+        // Loop through replies and delete likes they have been associated with
+        for (let i = 0; i < allComments.length; i++) {
+            await Likes.deleteMany({commentID: allComments[i]._id});
+        }
         await Comment.deleteMany({replyID: commentID}) // Delete all child comments if it has any
         return res.status(204).json();
 
