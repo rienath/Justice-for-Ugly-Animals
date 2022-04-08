@@ -19,6 +19,8 @@ const WritePost = ({allComments, setAllComments}) => {
         const temp = allComments.slice();
         temp.unshift(data.data.newComment);
         setAllComments(temp);
+        // Reset comment on submit
+        setNewPost({...newPost, comment: ''});
         //TODO: get error message if any and output the same as in login screen
         console.log(data.data);
     }
