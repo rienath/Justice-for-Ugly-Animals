@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../index.css';
 import {MdModeEditOutline} from "react-icons/md";
 import {RiDeleteBinFill} from "react-icons/ri";
 import {DateTime} from "luxon";
-import {deleteComment, editComment} from "../api";
+import {deleteComment, editComment, getLikes, like} from "../api";
 import Reply from "./Reply";
 
 /* A single comment component */
@@ -12,7 +12,9 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
     const [commentText, setCommentText] = useState(comment.comment);
     const [commentID] = useState(comment._id);
     const [editing, setEditing] = useState(false); // True if we are in editing regime
-    const [replies, setReplies] = useState(comment.replies);
+    const [replies, setReplies] = useState(comment.replies); // Comment replies
+    const [rating, setRating] = useState(); // Comment rating
+    const [liked, setLiked] = useState(false); // Whether the comment is liked
 
     // Calculate how long ago the comment was made
     const showDateDifference = () => {
@@ -36,6 +38,14 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
         }
     }
 
+    // Effects
+    // Get the rating of the comment and set it
+    useEffect(() => {
+        getLikes(commentID).then((res) => updateRating(res.data.likes, res.data.liked))
+            .then((err) => console.log(err));
+    }, []);
+
+
     // Handlers
     // Delete the comment
     const handleCommentDelete = async () => {
@@ -46,6 +56,18 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
         setAllComments(arr);
         // TODO: get error messages
         console.log(data.data);
+    }
+
+    // Update rating of the comment
+    const updateRating = (likes, liked) => {
+        setRating(likes);
+        setLiked(liked);
+    }
+
+    const handleRatingChange = async () => {
+        const response = await like(commentID);
+        console.log(response.data);
+        updateRating(response.data.likes, response.data.liked)
     }
 
     // Edit the comment
@@ -68,9 +90,13 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
         <div className="border border-green-200 bg-green-50 py-2 rounded-md">
             <div className="flex flex-row items-center">
                 <div className="px-4">
-                    <button className="w-10 h-10 bg-yellow-200 align-middle hover:bg-yellow-300 duration-300">
-                        <h5 className="text-black text-sm text-center"><b>{comment.rating}</b></h5>
-                    </button>
+                    {liked ? <button onClick={handleRatingChange}
+                                     className="w-10 h-10 bg-yellow-400 align-middle hover:bg-yellow-300 duration-300">
+                        <h5 className="text-black text-sm text-center"><b>{rating}</b></h5>
+                    </button> : <button onClick={handleRatingChange}
+                                        className="w-10 h-10 bg-yellow-200 align-middle hover:bg-yellow-300 duration-300">
+                        <h5 className="text-black text-sm text-center"><b>{rating}</b></h5>
+                    </button>}
                 </div>
 
                 <div className="w-full">

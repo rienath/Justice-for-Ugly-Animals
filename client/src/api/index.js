@@ -25,7 +25,11 @@ API.interceptors.response.use((response) => {
 // API calls
 export const login = (formData) => API.post('/user/login', formData);
 export const register = (formData) => API.post('/user/register', formData);
+
 export const createComment = (comment) => API.post('/comments', comment);
 export const deleteComment = (commentID) => API.delete(`/comments/${commentID}`);
 export const editComment = (comment) => API.patch(`/comments/`, comment);
 export const getComments = async () => API.get('/comments');
+
+export const like = (commentID) => API.post(`/like/${commentID}`);
+export const getLikes = (commentID) => API.get(`/like/${commentID}`);
