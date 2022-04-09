@@ -1,3 +1,4 @@
+// TODO when 1 comment or like, remove 's'
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {deleteUser, getUserStats, updateUser} from "../api";
@@ -13,12 +14,15 @@ const Profile = ({user, setUser}) => {
     const [likes, setLikes] = useState(0)
     const [comments, setComments] = useState(0)
 
+    // Set comments and likes counts
     useEffect(() => {
         getUserStats().then((res) => {
             setLikes(res.data.likes);
             setComments(res.data.comments);
         });
     }, []);
+
+    // Set username and email when they are changed
     useEffect(() => {
         setCredentials({username: user.username, email: user.email});
     }, [user]);
@@ -60,7 +64,8 @@ const Profile = ({user, setUser}) => {
         setCredentials({...credentials, email: e.target.value});
     }
 
-    return (<div className="mx-auto px-4">
+    return (<div
+        className="mx-auto px-4 pattern-isometric pattern-indigo-50 pattern-bg-transparent pattern-opacity-80 h-full min-h-screen">
         <div className="flex flex-col min-w-0 bg-white w-full mb-6 shadow-xl rounded-lg">
             <div className="px-6 pt-2 pb-16">
                 <div className="flex flex-row justify-end">
@@ -79,7 +84,7 @@ const Profile = ({user, setUser}) => {
                     <div className="w-full flex flex-row justify-end lg:px-12 self-center">
                         <div className="py-6 px-0.5 md:px-3 mt-3.5 md:mt-0">
                             {edit ? <button onClick={handleEdit}
-                                            className="text-white bg-green-600 hover:bg-green-900 font-bold text-xs px-1.5 md:px-4 py-2 rounded outline-none mb-1 ease-linear duration-150"
+                                            className="text-white bg-green-500 hover:bg-green-700 font-bold text-xs px-1.5 md:px-4 py-2 rounded outline-none mb-1 ease-linear duration-150"
                                             type="button">FINISH EDITING
                             </button> : <button onClick={handleEdit}
                                                 className="text-white bg-indigo-600 hover:bg-indigo-900 font-bold text-xs px-1.5 md:px-4 py-2 rounded outline-none mb-1 ease-linear duration-150"

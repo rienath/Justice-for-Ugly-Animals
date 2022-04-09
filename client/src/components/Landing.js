@@ -41,6 +41,7 @@ const Landing = () => {
                 })
         }
     };
+
     // For changing between login/register forms
     const handleToggle = () => {
         setIsRegister((prev) => !prev);
@@ -59,7 +60,8 @@ const Landing = () => {
         }
     }, []);
 
-    return (<div className="pattern-isometric pattern-indigo-50 pattern-bg-transparent pattern-opacity-80">
+    return (<div
+        className="h-full min-h-screen pattern-isometric pattern-indigo-50 pattern-bg-transparent pattern-opacity-80">
         <main className="flex md:h-screen">
             <section className="container m-auto space-y-16 pb-12 md:pb-0">
                 <div
