@@ -14,28 +14,23 @@ const App = () => {
 
     // Current user
     const [user, setUser] = useState({
-        _id: '',
-        username: '',
-        email: '',
-        privilege: ''
+        _id: '', username: '', email: '', privilege: ''
     });
 
     useEffect(() => {
         console.log(1);
     }, [user, setUser]);
 
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route index element={<Landing/>}/>
-                <Route path="/main" element={<Main user={user} setUser={setUser}/>}>
-                    <Route path="profile" element={<Profile user={user} setUser={setUser}/>}/>
-                    <Route index element={<Comments user={user}/>}/>
-                </Route>
+    return (<BrowserRouter>
+        <Routes>
+            <Route index element={<Landing/>}/>
+            <Route path="/main" element={<Main user={user} setUser={setUser}/>}>
+                <Route path="profile" element={<Profile user={user} setUser={setUser}/>}/>
+                <Route index element={<Comments user={user}/>}/>
                 <Route path="shop" element={<Shop user={user}/>}/>
-            </Routes>
-        </BrowserRouter>
-    )
+            </Route>
+        </Routes>
+    </BrowserRouter>)
 }
 
 export default App;
