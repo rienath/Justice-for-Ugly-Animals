@@ -1,15 +1,47 @@
 import {IoAddCircleOutline} from "react-icons/io5";
 import React, {useState} from "react";
+import {addShopItem, editComment} from "../api";
 
 /* A component responsible for adding a new item in the shop */
-const ShopAddItem = () => {
+const ShopAddItem = ({allItems, setAllItems}) => {
 
     const [adding, setAdding] = useState(false); // True if we are in editing regime
+    const [item, setItem] = useState({name: '', description: '', stock: undefined, price: undefined});
 
     // Edit the comment
     const handleItemAdding = async () => {
+        // TODO display error if did not succeed
+        if (adding) { // If the admin was already adding, we need to send the new item to server
+            try {
+                const newItem = await addShopItem(item);
+                const temp = allItems.slice().reverse();
+                temp.push(newItem.data);
+                setAllItems(temp);
+                setItem({name: '', description: '', stock: undefined, price: undefined}); // Reset value of item
+            } catch (e) {
+                console.log(e)
+            }
+        }
         setAdding(!adding);
     }
+
+    // Change handlers
+    const handleNameChange = (e) => {
+        setItem({...item, name: e.target.value});
+    }
+
+    const handleDescriptionChange = (e) => {
+        setItem({...item, description: e.target.value});
+    }
+
+    const handleStockChange = (e) => {
+        setItem({...item, stock: e.target.value});
+    }
+
+    const handlePriceChange = (e) => {
+        setItem({...item, price: e.target.value});
+    }
+
 
     return (<>
         {!adding ? <div className="flex justify-center">
@@ -21,12 +53,16 @@ const ShopAddItem = () => {
             <div className="flex flex-row px-2 items-center">
                 <>
                     <div className="text-lg font-semibold pr-5 break-words min-w-min">
-                        <textarea className="text-l text-center w-16" placeholder={'Price'}/>
+                        <textarea className="text-l text-center w-16" placeholder={'Price'} value={item.price}
+                                  onChange={handlePriceChange}/>
                     </div>
                     <div className="flex flex-col justify-start w-full">
-                        <textarea className="font-semibold text-lg" placeholder={'Name'}/>
-                        <textarea className="italic text-xs text-gray-500" placeholder={'Stock'}/>
-                        <textarea className="text-md pt-3" placeholder={'Description'}/>
+                        <textarea className="font-semibold text-lg pl-1" placeholder={'Name'} value={item.name}
+                                  onChange={handleNameChange}/>
+                        <textarea className="italic text-xs text-gray-500 pl-1" placeholder={'Stock'} value={item.stock}
+                                  onChange={handleStockChange}/>
+                        <textarea className="text-md pl-1" placeholder={'Description'} value={item.description}
+                                  onChange={handleDescriptionChange}/>
                     </div>
                 </>
                 <div className="flex justify-end text-lg font-semibold w-full">

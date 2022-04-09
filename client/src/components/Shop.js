@@ -1,9 +1,19 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ShopItem from "./ShopItem";
 import ShopBasketItem from "./ShopBasketItem";
 import ShopAddItem from "./ShopAddItem";
+import {getAllItems} from "../api";
+import Comment from "./Comment";
 
 const Shop = ({user}) => {
+
+    const [allItems, setAllItems] = useState([]);
+
+    // Get all shop items from server
+    useEffect(() => {
+        getAllItems().then((res) => setAllItems(res.data))
+            .then((err) => console.log(err));
+    }, []);
 
     return (<div>
         <div
@@ -27,9 +37,10 @@ const Shop = ({user}) => {
                             <p className="text-center font-semibold text-3xl">SHOP</p>
                         </div>
                     </div>
-                    {user.privilege === 'admin' ? <ShopAddItem/> : <></>}
-                    <ShopItem price={45} name={'Gold uCOIN'} stock={10} description={'For buying animals'} user={user}/>
-                    <ShopItem price={2} name={'Silver uCOIN'} stock={2} description={'For services'} user={user}/>
+                    {user.privilege === 'admin' ? <ShopAddItem allItems={allItems} setAllItems={setAllItems}/> : <></>}
+
+                    {allItems.reverse().map((item) => (<ShopItem key={item._id} initialItem={item} user={user}/>))}
+
                 </div>
                 <div className="col-span-12 sm:col-span-12 md:col-span-5 lg:col-span-4 xxl:col-span-4">
                     <div className="bg-white py-4 px-4 shadow-xl rounded-lg my-4 mx-4">
