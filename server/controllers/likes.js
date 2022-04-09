@@ -38,9 +38,9 @@ export const likeComment = async (req, res) => {
 export const likeNumber = async (req, res) => {
     try {
         const {commentID} = req.params;
-        // Find the comment and count the number
+        // Find the comment and count the number of likes
         Likes.countDocuments({commentID: commentID}, function (err, likesCount) {
-            // Also return if user has liked it
+            // Also return if requesting user has liked it
             Likes.exists({userID: req.userID, commentID}, async function (err, userLiked) {
                 return res.status(200).json({likes: likesCount, liked: userLiked})
             });

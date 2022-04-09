@@ -1,34 +1,63 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
+import {deleteUser, getUserStats, updateUser} from "../api";
+import decode from "jwt-decode";
 
-const Profile = ({user}) => {
+const Profile = ({user, setUser}) => {
 
     const navigate = useNavigate();
 
     const [edit, setEdit] = useState(false);
     const [deleteProfile, setDeleteProfile] = useState(false);
-    const [credentials, setCredentials] = useState({username: user.username, email: user.email});
+    const [credentials, setCredentials] = useState({username: '', email: ''});
+    const [likes, setLikes] = useState(0)
+    const [comments, setComments] = useState(0)
+
+    useEffect(() => {
+        getUserStats().then((res) => {
+            setLikes(res.data.likes);
+            setComments(res.data.comments);
+        });
+    }, []);
+    useEffect(() => {
+        setCredentials({username: user.username, email: user.email});
+    }, [user]);
 
     // Click handlers
-    const handleEdit = (e) => {
+    const handleEdit = async (e) => {
         e.preventDefault();
+        if (edit) { // If editing has finished, send a call
+            await updateUser({newUsername: credentials.username, newEmail: credentials.email}).then(async (data) => {
+                localStorage.setItem("token", data.data);
+                const decodedToken = decode(data.data);
+                await setUser(decodedToken);
+            })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
         setEdit(!edit);
     }
 
     const handleDelete = (e) => {
         e.preventDefault();
+        // Only delete when the button was pressed for the second time (confirmation)
+        // TODO error handling
         if (deleteProfile) {
-            console.log();
+            deleteUser().then((res) => {
+                localStorage.clear(); // Delete token
+                navigate('/');
+            });
         }
         setDeleteProfile(true);
     }
 
     // Change handlers
     const handleUsernameChange = (e) => {
-        setCredentials({username: e.target.value});
+        setCredentials({...credentials, username: e.target.value});
     }
     const handleEmailChange = (e) => {
-        setCredentials({email: e.target.value});
+        setCredentials({...credentials, email: e.target.value});
     }
 
     return (<div className="mx-auto px-4">
@@ -38,11 +67,11 @@ const Profile = ({user}) => {
                     <div className="w-full">
                         <div className="flex justify-start lg:px-12 py-4 lg:pt-4 pt-8">
                             <div className="mr-4 p-3 text-center">
-                                <span className="text-xl font-bold block tracking-wide">22</span>
+                                <span className="text-xl font-bold block tracking-wide">{comments}</span>
                                 <span className="text-sm">Comments</span>
                             </div>
                             <div className="mr-4 p-3 text-center">
-                                <span className="text-xl font-bold block tracking-wide">10</span>
+                                <span className="text-xl font-bold block tracking-wide">{likes}</span>
                                 <span className="text-sm">Likes</span>
                             </div>
                         </div>
@@ -70,10 +99,11 @@ const Profile = ({user}) => {
                 </div>
                 <div className="flex flex-col items-center">
                     {edit ? <>
-                            <textarea onchange={handleUsernameChange}
-                                      className="text-4xl font-semibold text-center leading-normal">{credentials.username}</textarea>
-                        <textarea onchange={handleEmailChange}
-                                  className="mt-10 text-center">{credentials.email}</textarea>
+                            <textarea onChange={handleUsernameChange}
+                                      className="text-4xl font-semibold text-center leading-normal"
+                                      value={credentials.username}/>
+                        <textarea onChange={handleEmailChange}
+                                  className="mt-10 text-center" value={credentials.email}/>
                     </> : <>
                         <h3 className="text-4xl font-semibold leading-normal">{credentials.username}</h3>
                         <div className="mt-10">{credentials.email}</div>
