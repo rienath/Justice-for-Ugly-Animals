@@ -26,18 +26,21 @@ API.interceptors.response.use((response) => {
 // API calls
 export const login = (formData) => API.post('/user/login', formData);
 export const register = (formData) => API.post('/user/register', formData);
-export const getUserStats = async () => API.get('/user/stats'); // Get number of comments abd likes user made
+export const getUserStats = () => API.get('/user/stats'); // Get number of comments abd likes user made
 export const deleteUser = () => API.delete('/user');
 export const updateUser = (formData) => API.patch('/user', formData);
 
 export const createComment = (comment) => API.post('/comments', comment);
 export const deleteComment = (commentID) => API.delete(`/comments/${commentID}`);
 export const editComment = (comment) => API.patch(`/comments/`, comment);
-export const getComments = async () => API.get('/comments');
+export const getComments = () => API.get('/comments');
 
 export const like = (commentID) => API.post(`/like/${commentID}`);
-export const getLikes = async (commentID) => API.get(`/like/${commentID}`);
+export const getLikes = (commentID) => API.get(`/like/${commentID}`);
 
 export const addShopItem = (item) => API.post(`/shop`, item);
-export const getAllItems = async () => API.get(`/shop`);
-export const editItem = async (item) => API.put(`/shop`, item);
+export const getAllItems = () => API.get(`/shop`);
+export const editItem = (item) => API.put(`/shop`, item);
+export const getBasket = (item) => API.get(`/shop/basket`, item);
+export const addBasket = (item) => API.post(`/shop/basket`, item);
+//export const deleteBasket = (item) => API.delete(`/shop/basket`, item);

@@ -1,10 +1,10 @@
 import {IoAddCircleOutline} from "react-icons/io5";
 import React, {useState} from "react";
 import {MdModeEditOutline} from "react-icons/md";
-import {editItem} from "../api";
+import {addBasket, editItem} from "../api";
 
 /* A single item in the shop */
-const ShopItem = ({initialItem, user}) => {
+const ShopItem = ({initialItem, user, basket, setBasket}) => {
 
     const [editing, setEditing] = useState(false); // True if we are in editing regime
     const [item, setItem] = useState(initialItem);
@@ -15,6 +15,12 @@ const ShopItem = ({initialItem, user}) => {
             await editItem(item);
         }
         setEditing(!editing);
+    }
+
+    // Handle add to basket button
+    const handleAddBasket = async (e) => {
+        const newBasket = await addBasket({itemID: item._id});
+        setBasket(newBasket.data);
     }
 
     // Change handlers
@@ -71,7 +77,8 @@ const ShopItem = ({initialItem, user}) => {
                 </> : <></>}
 
                 <button
-                    className="text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors py-1 px-1 rounded-full">
+                    className="text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors py-1 px-1 rounded-full"
+                    onClick={handleAddBasket}>
                     <IoAddCircleOutline size={25}/>
                 </button>
             </div>

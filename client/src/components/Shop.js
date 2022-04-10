@@ -2,18 +2,33 @@ import React, {useEffect, useState} from 'react';
 import ShopItem from "./ShopItem";
 import ShopBasketItem from "./ShopBasketItem";
 import ShopAddItem from "./ShopAddItem";
-import {getAllItems} from "../api";
-import Comment from "./Comment";
+import {getAllItems, getBasket} from "../api";
 
 const Shop = ({user}) => {
 
-    const [allItems, setAllItems] = useState([]);
+    const [allItems, setAllItems] = useState([]); // All shop items
+    const [basket, setBasket] = useState([]); // All basket items
+    const [basketPrice, setBasketPrice] = useState(0); // Price of the basket
 
-    // Get all shop items from server
+    // Get all shop items from server and set them
     useEffect(() => {
         getAllItems().then((res) => setAllItems(res.data))
             .then((err) => console.log(err));
     }, []);
+
+    // Get all basket items of user from server and set them
+    useEffect(() => {
+        getBasket().then((res) => setBasket(res.data))
+            .then((err) => console.log(err));
+    }, []);
+
+    // Set the total price of the basket every time basket updates
+    useEffect(() => {
+        setBasketPrice(0);
+        let price = 0;
+        basket.filter((obj) => price += obj.price * obj.quantity);
+        setBasketPrice(price);
+    }, [basket]);
 
     return (<div>
         <div
@@ -39,7 +54,9 @@ const Shop = ({user}) => {
                     </div>
                     {user.privilege === 'admin' ? <ShopAddItem allItems={allItems} setAllItems={setAllItems}/> : <></>}
 
-                    {allItems.reverse().map((item) => (<ShopItem key={item._id} initialItem={item} user={user}/>))}
+                    {allItems.slice(0).reverse().map((item) => (
+                        <ShopItem key={item._id} initialItem={item} user={user} basket={basket}
+                                  setBasket={setBasket}/>))}
 
                 </div>
                 <div className="col-span-12 sm:col-span-12 md:col-span-5 lg:col-span-4 xxl:col-span-4">
@@ -50,12 +67,13 @@ const Shop = ({user}) => {
                             </div>
                         </div>
 
-                        <ShopBasketItem price={10} name={'Gold'} stock={14} selected={2}/>
+                        {basket.slice(0).reverse().map((basketItem) => (
+                            <ShopBasketItem key={basketItem._id} item={basketItem} user={user}/>))}
 
                         <div className="flex justify-center items-center text-center">
                             <div className="text-xl font-semibold">
                                 <p>Total Price</p>
-                                <p className="text-5xl">£312</p>
+                                <p className="text-5xl">£{basketPrice}</p>
                             </div>
                         </div>
 
