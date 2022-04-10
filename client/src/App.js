@@ -17,10 +17,6 @@ const App = () => {
         _id: '', username: '', email: '', privilege: ''
     });
 
-    useEffect(() => {
-        console.log(1);
-    }, [user, setUser]);
-
     return (<BrowserRouter>
         <Routes>
             <Route index element={<Landing/>}/>

@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {deleteUser, getUserStats, updateUser} from "../api";
 import decode from "jwt-decode";
+import toast, {Toaster} from "react-hot-toast";
 
 const Profile = ({user, setUser}) => {
 
@@ -35,12 +36,14 @@ const Profile = ({user, setUser}) => {
                 localStorage.setItem("token", data.data);
                 const decodedToken = decode(data.data);
                 await setUser(decodedToken);
+                setEdit(!edit);
             })
                 .catch((err) => {
-                    console.log(err);
+                    toast.error(err.response.data)
                 });
+        } else {
+            setEdit(!edit);
         }
-        setEdit(!edit);
     }
 
     const handleDelete = (e) => {
@@ -66,6 +69,7 @@ const Profile = ({user, setUser}) => {
 
     return (<div
         className="mx-auto px-4 pattern-isometric pattern-indigo-50 pattern-bg-transparent pattern-opacity-80 h-full min-h-screen">
+        <Toaster/>
         <div className="flex flex-col min-w-0 bg-white w-full mb-6 shadow-xl rounded-lg">
             <div className="px-6 pt-2 pb-16">
                 <div className="flex flex-row justify-end">

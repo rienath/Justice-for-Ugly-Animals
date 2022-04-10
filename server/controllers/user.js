@@ -3,21 +3,22 @@ import jwt from "jsonwebtoken";
 import UserModel from "../models/user.js";
 import Likes from "../models/likes.js";
 import Comment from "../models/comment.js";
+import validator from "email-validator";
 
-// Login
+// Login and get token
 export const login = async (req, res) => {
-
     const {email, password} = req.body;
 
     try {
         // Check if user exists
         const existingUser = await UserModel.findOne({email});
         if (!existingUser) return res.status(404).json({message: "User not found"});
+
         // Check if credentials are correct
         const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
         if (!isPasswordCorrect) return res.status(400).json({message: "Invalid credentials"});
 
-        // Token
+        // Create a token
         const token = jwt.sign({
             email: existingUser.email,
             username: existingUser.username,
@@ -36,17 +37,27 @@ export const register = async (req, res) => {
     const {email, username, password} = req.body;
 
     try {
+        // Check if email is valid
+        if (!validator.validate(email)) return res.status(400).json("Invalid email");
+
+        // Check if password is 8-32 characters long and username is 4-12 characters long
+        if (password.length < 8) return res.status(400).json("Password too short");
+        if (password.length > 32) return res.status(400).json("Password too long");
+        if (username.length < 4) return res.status(400).json("Username too short");
+        if (username.length > 12) return res.status(400).json("Username too long");
+
         // Check if email or username already exist
         const existingEmail = await UserModel.findOne({email});
         const existingLogin = await UserModel.findOne({username});
-        if (existingEmail) return res.status(400).json({message: "User already exists"});
-        if (existingLogin) return res.status(400).json({message: "Username is taken"});
+        if (existingEmail) return res.status(400).json("User already exists");
+        if (existingLogin) return res.status(400).json("Username is taken");
 
         // Encrypt password
         const hashedPassword = await bcrypt.hash(password, 12);
         // Create database entry
         const result = await UserModel.create({email, username: username, password: hashedPassword});
-        // Token
+
+        // Create a token
         const token = jwt.sign({
             email: result.email, username: result.username, privilege: result.privilege, _id: result._id
         }, process.env.JWT_SECRET, {expiresIn: "24h"});
@@ -103,23 +114,32 @@ export const userDelete = async (req, res) => {
 }
 
 /* Edit user email and/or username */
-// TODO prevent updating on illegal credentials
 export const userEdit = async (req, res) => {
     try {
         const body = req.body;
-        // Prevent updating on existing credentials
-        const emailExists = await UserModel.findOne({email: body.newEmail});
-        const usernameExists = await UserModel.findOne({username: body.newUsername});
-        if (emailExists) { // If email already exists, and it does not belong to us, send an error
-            if (emailExists.email != req.email) {
-                return res.status(400).json('User with such email already exists')
-            }
+
+        // If credentials are the same, return same token
+        if (req.email === body.newEmail && req.username === body.newUsername) {
+            return res.status(200).json(jwt.sign({
+                email: req.email, username: req.username, privilege: req.privilege, _id: req._id
+            }, process.env.JWT_SECRET, {expiresIn: "24h"}));
         }
-        if (usernameExists) {// If username already exists, and it does not belong to us, send an error
-            if (usernameExists.username != req.username) {
-                return res.status(400).json('User with such username already exists')
-            }
+
+        // Check if email is valid
+        if (!validator.validate(body.newEmail)) return res.status(400).json("Invalid email");
+
+        // Check if email or username already exist
+        if (req.email !== body.newEmail) {
+            const existingEmail = await UserModel.findOne({email: body.newEmail});
+            if (existingEmail) return res.status(400).json("Email is taken");
+        } else if (req.username !== body.newUsername) {
+            const existingLogin = await UserModel.findOne({username: body.newUsername});
+            if (existingLogin) return res.status(400).json("Username is taken");
         }
+
+        // Check if username is 4-12 characters long
+        if (body.newUsername.length < 4) return res.status(400).json("Username too short");
+        if (body.newUsername.length > 12) return res.status(400).json("Username too long");
 
         // Update the user information
         try {
@@ -127,18 +147,22 @@ export const userEdit = async (req, res) => {
                 username: body.newUsername, email: body.newEmail
             }, {new: true});
             await Comment.updateMany({userID: req.userID}, { // Also update username for comments
-                from: body.newUsername});
-            // Token
+                from: body.newUsername
+            });
+
+            // Make a token
             const token = jwt.sign({
                 email: userUpdated.email,
                 username: userUpdated.username,
                 privilege: userUpdated.privilege,
                 _id: userUpdated._id
             }, process.env.JWT_SECRET, {expiresIn: "24h"});
+
             return res.status(200).json(token);
         } catch (err) {
             return res.status(404).json('Requesting user does not exist or your token expired')
         }
+
     } catch (err) {
         return res.status(500).json('Server internal error')
     }
