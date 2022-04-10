@@ -125,7 +125,7 @@ export const userEdit = async (req, res) => {
         try {
             const userUpdated = await UserModel.findByIdAndUpdate(req.userID, {
                 username: body.newUsername, email: body.newEmail
-            }, {new : true});
+            }, {new: true});
             await Comment.updateMany({userID: req.userID}, { // Also update username for comments
                 from: body.newUsername});
             // Token

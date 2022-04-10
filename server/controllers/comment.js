@@ -101,6 +101,5 @@ export const editComment = async (req, res) => {
 
     // Update the comment
     await Comment.findOneAndUpdate(filter, {comment: body.comment});
-    console.log(body.comment);
     return res.status(204).json();
 }

@@ -14,7 +14,7 @@ const ShopAddItem = ({allItems, setAllItems}) => {
         if (adding) { // If the admin was already adding, we need to send the new item to server
             try {
                 const newItem = await addShopItem(item);
-                const temp = allItems.slice().reverse();
+                const temp = allItems.slice();
                 temp.push(newItem.data);
                 setAllItems(temp);
                 setItem({name: '', description: '', stock: undefined, price: undefined}); // Reset value of item

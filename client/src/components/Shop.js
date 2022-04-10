@@ -17,6 +17,7 @@ const Shop = ({user}) => {
     }, []);
 
     // Get all basket items of user from server and set them
+    // TODO if no more can be added, do not allow the button
     useEffect(() => {
         getBasket().then((res) => setBasket(res.data))
             .then((err) => console.log(err));
@@ -68,7 +69,7 @@ const Shop = ({user}) => {
                         </div>
 
                         {basket.slice(0).reverse().map((basketItem) => (
-                            <ShopBasketItem key={basketItem._id} item={basketItem} user={user}/>))}
+                            <ShopBasketItem key={basketItem._id} item={basketItem} setBasket={setBasket}/>))}
 
                         <div className="flex justify-center items-center text-center">
                             <div className="text-xl font-semibold">
