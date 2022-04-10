@@ -27,6 +27,6 @@ router.get("/shop", middleware, getAllItems); // Get all items
 router.put("/shop", middleware, editItem); // Edit the item items
 router.get("/shop/basket", middleware, getBasket); // Get items from basket
 router.post("/shop/basket", middleware, addBasket); // Add one item to basket
-router.delete("/shop/basket", middleware, deleteBasket); // Delete one item from basket
+router.delete("/shop/basket/:itemID", middleware, deleteBasket); // Delete one item from basket
 
 export default router;

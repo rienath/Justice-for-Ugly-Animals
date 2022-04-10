@@ -43,4 +43,4 @@ export const getAllItems = () => API.get(`/shop`);
 export const editItem = (item) => API.put(`/shop`, item);
 export const getBasket = (item) => API.get(`/shop/basket`, item);
 export const addBasket = (item) => API.post(`/shop/basket`, item);
-//export const deleteBasket = (item) => API.delete(`/shop/basket`, item);
+export const deleteBasket = (itemID) => API.delete(`/shop/basket/${itemID}`);

@@ -1,3 +1,4 @@
+// TODO say that no more items are available if trying to add too much
 import {IoAddCircleOutline} from "react-icons/io5";
 import React, {useState} from "react";
 import {MdModeEditOutline} from "react-icons/md";

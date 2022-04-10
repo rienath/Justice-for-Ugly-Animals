@@ -24,8 +24,9 @@ export const getBasket = async (req, res) => {
 export const addBasket = async (req, res) => {
     try {
         const {itemID} = req.body;
-        let item = undefined;
+
         // Check if such item exists
+        let item = undefined;
         try {
             item = await Shop.findById(itemID);
         } catch (err) { // No such item error
@@ -34,6 +35,7 @@ export const addBasket = async (req, res) => {
         if (item.stock === 0) { // If someone already bought the item
             return res.status(400).json('The item is no longer in stock');
         }
+
         // Add the item to basket
         // If user already has this item in basket, increase it's number
         const foundInBasket = await Basket.findOne({itemID: itemID, userID: req.userID});
@@ -61,17 +63,18 @@ export const addBasket = async (req, res) => {
 /* Delete the item from the basket (decrease its quantity by 1) */
 export const deleteBasket = async (req, res) => {
     try {
-        const {itemID} = req.body;
-        // If at 1, delete the entry
-        const deleted = Basket.remove({itemID, userID: req.userID, quantity: 1}, function (err) {
-            if (!err) {
-                console.log(1);
-            } else {
-                console.log(2);
-            }
-        });
-        // If it was not deleted (more than 1), decrease the quantity
+        const {itemID} = req.params;
 
+        // If at there was only 1 item in the basket, delete the entry as there is no need to have it there at 0 entries
+        const deleted = await Basket.deleteOne({itemID: itemID, userID: req.userID, quantity: 1});
+
+        // If nothing was deleted, there were more items in basket, decrement the quantity then
+        if (deleted.deletedCount === 0) {
+            await Basket.updateOne({itemID: itemID, userID: req.userID}, {"$inc": {quantity: -1}});
+        }
+
+        const newBasket = await getBasketMethod(req.userID);
+        return res.status(201).json(newBasket)
     } catch (err) {
         return res.status(500).json('Server internal error')
     }
