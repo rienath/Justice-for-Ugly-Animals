@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import ShopItem from "./ShopItem";
 import ShopBasketItem from "./ShopBasketItem";
 import ShopAddItem from "./ShopAddItem";
-import {getAllItems, getBasket} from "../api";
+import {buy, deleteComment, getAllItems, getBasket} from "../api";
 
 const Shop = ({user}) => {
 
@@ -17,7 +17,6 @@ const Shop = ({user}) => {
     }, []);
 
     // Get all basket items of user from server and set them
-    // TODO if no more can be added, do not allow the button
     useEffect(() => {
         getBasket().then((res) => setBasket(res.data))
             .then((err) => console.log(err));
@@ -30,6 +29,17 @@ const Shop = ({user}) => {
         basket.filter((obj) => price += obj.price * obj.quantity);
         setBasketPrice(price);
     }, [basket]);
+
+    const handlePay = async () => {
+        try {
+            const response = await buy();
+            setBasket(response.data.basket);
+            setAllItems(response.data.shop);
+        } catch (err) {
+            // TODO: get error messages
+            console.log(err);
+        }
+    }
 
     return (<div>
         <div
@@ -80,10 +90,10 @@ const Shop = ({user}) => {
 
                     </div>
                     <div className="flex justify-center pb-10">
-                        <button
-                            className="text-white bg-green-500 hover:bg-green-700 font-bold text-xs px-1.5 md:px-4 py-2 rounded outline-none mb-1 transition-colors"
-                            type="button"> PAY
-                        </button>
+                        {basket.length > 0 ? <button onClick={handlePay}
+                                                     className="text-white bg-green-500 hover:bg-green-700 font-bold text-xs px-1.5 md:px-4 py-2 rounded outline-none mb-1 transition-colors"
+                                                     type="button"> PAY
+                        </button> : <></>}
                     </div>
                 </div>
             </div>

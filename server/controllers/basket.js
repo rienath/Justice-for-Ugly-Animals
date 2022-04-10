@@ -1,6 +1,7 @@
 /* Add the item to basket */
 import Shop from "../models/shop.js";
 import Basket from "../models/basket.js";
+import Purchase from "../models/purchase.js";
 
 /* Returns user basket by ID. Is used in various calls */
 export const getBasketMethod = async (userID) => {
@@ -70,11 +71,53 @@ export const deleteBasket = async (req, res) => {
 
         // If nothing was deleted, there were more items in basket, decrement the quantity then
         if (deleted.deletedCount === 0) {
-            await Basket.updateOne({itemID: itemID, userID: req.userID}, {"$inc": {quantity: -1}});
+            await Basket.updateOne({itemID: itemID, userID: req.userID}, {$inc: {quantity: -1}});
         }
 
         const newBasket = await getBasketMethod(req.userID);
         return res.status(201).json(newBasket)
+    } catch (err) {
+        return res.status(500).json('Server internal error')
+    }
+}
+
+/* Buy items in basket. This would be connected to Stripe in production application */
+export const buy = async (req, res) => {
+    try {
+        // Find items in basket
+        const toBuy = await Basket.find({userID: req.userID});
+        // For every item, check if there are enough items in stock
+        for (let i = 0; i < toBuy.length; i++) {
+            const item = await Shop.findById(toBuy[i].itemID);
+            if (item.stock < toBuy[i].quantity) { // The stock has changed, so the user cannot buy the items anymore
+                // Send updated basket and shop
+                // TODO test
+                const basket = await getBasketMethod(req.userID);
+                const shop = await Shop.find();
+                return res.status(409).json({basket: basket, shop: shop})
+            }
+        }
+
+        // Get the items that the user is buying and their quantities
+        // Also, update the shop stock
+        let items = []
+        let quantities = []
+        for (let i = 0; i < toBuy.length; i++) {
+            await Shop.findByIdAndUpdate(toBuy[i].itemID, {$inc: {stock: -toBuy[i].quantity}});
+            items.push(toBuy[i].itemID);
+            quantities.push(toBuy[i].quantity);
+        }
+
+        // Add purchases to purchase list
+        await Purchase.create({userID: req.userID, items, quantities});
+
+        // Remove everything from the basket of this user
+        await Basket.deleteMany({userID: req.userID});
+
+        // Return new updated shop and basket
+        const basket = await getBasketMethod(req.userID);
+        const shop = await Shop.find();
+        return res.status(200).json({basket: basket, shop: shop})
     } catch (err) {
         return res.status(500).json('Server internal error')
     }

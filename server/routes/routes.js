@@ -4,7 +4,7 @@ import {createComment, deleteComment, editComment, getComments} from "../control
 import middleware from '../middleware/auth.js';
 import {likeComment, likeNumber} from "../controllers/likes.js";
 import {addItem, editItem, getAllItems} from "../controllers/shop.js";
-import {addBasket, deleteBasket, getBasket} from "../controllers/basket.js";
+import {addBasket, buy, deleteBasket, getBasket} from "../controllers/basket.js";
 
 const router = express.Router();
 
@@ -28,5 +28,6 @@ router.put("/shop", middleware, editItem); // Edit the item items
 router.get("/shop/basket", middleware, getBasket); // Get items from basket
 router.post("/shop/basket", middleware, addBasket); // Add one item to basket
 router.delete("/shop/basket/:itemID", middleware, deleteBasket); // Delete one item from basket
+router.get("/shop/basket/buy", middleware, buy); // Delete one item from basket
 
 export default router;

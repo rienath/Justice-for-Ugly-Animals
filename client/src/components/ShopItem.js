@@ -1,6 +1,6 @@
 // TODO say that no more items are available if trying to add too much
 import {IoAddCircleOutline} from "react-icons/io5";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {MdModeEditOutline} from "react-icons/md";
 import {addBasket, editItem, getBasket} from "../api";
 
@@ -9,6 +9,11 @@ const ShopItem = ({initialItem, user, basket, setBasket}) => {
 
     const [editing, setEditing] = useState(false); // True if we are in editing regime
     const [item, setItem] = useState(initialItem);
+
+    // Update availability on pay
+    useEffect(() => {
+         setItem(initialItem);
+    }, [initialItem]);
 
     // Edit the comment
     const handleItemEdit = async () => {
@@ -79,12 +84,11 @@ const ShopItem = ({initialItem, user, basket, setBasket}) => {
                         <MdModeEditOutline/>
                     </button>}
                 </> : <></>}
-
-                <button
+                {item.stock > 0 ? <button
                     className="text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors py-1 px-1 rounded-full"
                     onClick={handleAddBasket}>
                     <IoAddCircleOutline size={25}/>
-                </button>
+                </button> : <></>}
             </div>
         </div>
     </div>)

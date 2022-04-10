@@ -27,10 +27,6 @@ const WritePost = ({allComments, setAllComments}) => {
 
     return (<div className="px-2 md:px-16 pt-5 text-gray-400">
         <div className="border border-green-200 p-2 rounded-full flex flex-row h-full bg-green-50">
-            <div className="rounded-full bg-gray-600 overflow-hidden w-10 h-10">
-                {/* TODO might add avatar picture
-                        <img src={Avatar} alt="" style={{filter:'invert(100%)'}} /> */}
-            </div>
             <input placeholder="Write a comment..." value={newPost.comment} onChange={handleChange}
                    onChange={handleChange}
                    onKeyPress={e => { // Handle pressing enter
