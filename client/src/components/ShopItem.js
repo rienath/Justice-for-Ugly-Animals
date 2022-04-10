@@ -1,7 +1,7 @@
 import {IoAddCircleOutline} from "react-icons/io5";
 import React, {useState} from "react";
 import {MdModeEditOutline} from "react-icons/md";
-import {addBasket, editItem} from "../api";
+import {addBasket, editItem, getBasket} from "../api";
 
 /* A single item in the shop */
 const ShopItem = ({initialItem, user, basket, setBasket}) => {
@@ -13,6 +13,9 @@ const ShopItem = ({initialItem, user, basket, setBasket}) => {
     const handleItemEdit = async () => {
         if (editing) { // If the item was edited, send it to server
             await editItem(item);
+            // Also refresh the basket as if the stock was reduced or price was changed, this has to be displayed
+            getBasket().then((res) => setBasket(res.data))
+                .then((err) => console.log(err));
         }
         setEditing(!editing);
     }

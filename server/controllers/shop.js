@@ -1,4 +1,5 @@
 import Shop from "../models/shop.js";
+import Basket from "../models/basket.js";
 
 /* Add new item to the shop */
 export const addItem = async (req, res) => {
@@ -30,9 +31,17 @@ export const editItem = async (req, res) => {
     try {
         const item = req.body;
         try {
-            const modifiedItem = await Shop.findByIdAndUpdate(item._id, {
+            const modifiedItem = await Shop.findByIdAndUpdate(item._id, { // Edit
                 name: item.name, description: item.description, stock: item.stock, price: item.price
-            });
+            }, {new: true});
+
+            // If someone has the item in the basket and the stock got reduced, reduce the number of items in basket too
+            if (modifiedItem.stock > 0) {
+                await Basket.find({itemID: modifiedItem._id, quantity: {$gt: modifiedItem.stock}})
+                    .updateMany({quantity: modifiedItem.stock});
+            } else { // If stock is 0, delete the item from baskets of all users
+                await Basket.find({itemID: modifiedItem._id}).deleteMany();
+            }
             return res.status(200).json(modifiedItem);
         } catch (err) { // Error can occur if price and stock are not numbers.
             return res.status(400).json('Price and stock should be numeric')

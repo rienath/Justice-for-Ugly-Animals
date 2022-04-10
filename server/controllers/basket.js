@@ -25,7 +25,7 @@ export const addBasket = async (req, res) => {
     try {
         const {itemID} = req.body;
         let item = undefined;
-        // Check if there are enough items
+        // Check if such item exists
         try {
             item = await Shop.findById(itemID);
         } catch (err) { // No such item error
@@ -38,25 +38,40 @@ export const addBasket = async (req, res) => {
         // If user already has this item in basket, increase it's number
         const foundInBasket = await Basket.findOne({itemID: itemID, userID: req.userID});
         if (foundInBasket) { // If the item is already in basket, just increase it's
-            const modifiedItem = await Basket.findByIdAndUpdate(foundInBasket._id, {quantity: foundInBasket.quantity + 1});
-            const newBasket = await getBasketMethod(req.userID);
-            return res.status(201).json(newBasket);
+            const basketItem = await Basket.findById(foundInBasket._id, {quantity: foundInBasket.quantity + 1});
+            if (basketItem.quantity < item.stock) { // Only add if there is enough item in stock
+                await basketItem.updateOne({quantity: basketItem.quantity + 1}); // Increment the quantity
+                const newBasket = await getBasketMethod(req.userID);
+                return res.status(201).json(newBasket);
+            }
+            return res.status(400).json('Not enough item in stock');
         } else {
-            const newBasketItem = await Basket.create({itemID, userID: req.userID, quantity: 1});
-            const newBasket = await getBasketMethod(req.userID);
-            return res.status(201).json(newBasket);
+            if (item.stock > 0) { // Only add item if there is stock
+                await Basket.create({itemID, userID: req.userID, quantity: 1});
+                const newBasket = await getBasketMethod(req.userID);
+                return res.status(201).json(newBasket);
+            }
+            return res.status(400).json('Not enough item in stock');
         }
     } catch (err) {
         return res.status(500).json('Server internal error')
     }
 }
 
-/* Add the item to basket */
+/* Delete the item from the basket (decrease its quantity by 1) */
 export const deleteBasket = async (req, res) => {
     try {
-        // Check if user has this item in basket
+        const {itemID} = req.body;
         // If at 1, delete the entry
-        // If at >1, decrease number
+        const deleted = Basket.remove({itemID, userID: req.userID, quantity: 1}, function (err) {
+            if (!err) {
+                console.log(1);
+            } else {
+                console.log(2);
+            }
+        });
+        // If it was not deleted (more than 1), decrease the quantity
+
     } catch (err) {
         return res.status(500).json('Server internal error')
     }
