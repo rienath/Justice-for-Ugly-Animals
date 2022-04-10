@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const API = axios.create({baseURL: 'http://localhost:5100/api'});
-//const API = axios.create({baseURL: 'https://justice-for-uglies.herokuapp.com/api'});
+//const API = axios.create({baseURL: 'http://localhost:5100/api'});
+const API = axios.create({baseURL: 'https://justice-for-uglies.herokuapp.com/api'});
 
 // Token interceptor
 API.interceptors.request.use((req) => {
