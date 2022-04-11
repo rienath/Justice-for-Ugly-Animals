@@ -122,7 +122,7 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
                         </div>
 
                         <div className="pt-0.5">
-                            {editing ? <textarea className="text-sm w-full leading-6" onChange={handleCommentChange}
+                            {editing ? <textarea className="px-2 text-sm w-full leading-6" onChange={handleCommentChange}
                                                  value={commentText} onKeyPress={handleEnter}/> : <div className="text-sm w-full leading-6">
                                 {commentText}
                             </div>}

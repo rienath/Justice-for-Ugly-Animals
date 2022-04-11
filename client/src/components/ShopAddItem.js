@@ -1,6 +1,7 @@
 import {IoAddCircleOutline} from "react-icons/io5";
 import React, {useState} from "react";
 import {addShopItem, editComment} from "../api";
+import toast, {Toaster} from "react-hot-toast";
 
 /* A component responsible for adding a new item in the shop */
 const ShopAddItem = ({allItems, setAllItems}) => {
@@ -10,19 +11,17 @@ const ShopAddItem = ({allItems, setAllItems}) => {
 
     // Edit the comment
     const handleItemAdding = async () => {
-        // TODO display error if did not succeed
         if (adding) { // If the admin was already adding, we need to send the new item to server
-            try {
-                const newItem = await addShopItem(item);
+            addShopItem(item).then((newItem) => {
                 const temp = allItems.slice();
                 temp.push(newItem.data);
                 setAllItems(temp);
                 setItem({name: '', description: '', stock: undefined, price: undefined}); // Reset value of item
-            } catch (e) {
-                console.log(e)
-            }
+                setAdding(!adding);
+            }).catch((err) => toast.error(err.response.data));
+        } else {
+            setAdding(!adding);
         }
-        setAdding(!adding);
     }
 
     // Change handlers
@@ -48,7 +47,7 @@ const ShopAddItem = ({allItems, setAllItems}) => {
     }
 
 
-    return (<>
+    return (<><Toaster/>
         {!adding ? <div className="flex justify-center">
             <button onClick={handleItemAdding}
                     className="rounded-full text-white bg-green-500 hover:bg-green-700 font-bold text-xs px-1.5 md:px-4 py-2 outline-none mb-1 transition-colors"

@@ -37,10 +37,7 @@ const Profile = ({user, setUser}) => {
                 const decodedToken = decode(data.data);
                 await setUser(decodedToken);
                 setEdit(!edit);
-            })
-                .catch((err) => {
-                    toast.error(err.response.data)
-                });
+            }).catch((err) => toast.error(err.response.data));
         } else {
             setEdit(!edit);
         }
@@ -49,12 +46,11 @@ const Profile = ({user, setUser}) => {
     const handleDelete = (e) => {
         e.preventDefault();
         // Only delete when the button was pressed for the second time (confirmation)
-        // TODO error handling
         if (deleteProfile) {
             deleteUser().then((res) => {
                 localStorage.clear(); // Delete token
                 navigate('/');
-            });
+            }).catch((err) => toast.error(err.response.data));
         }
         setDeleteProfile(true);
     }
@@ -82,11 +78,11 @@ const Profile = ({user, setUser}) => {
                         <div className="flex justify-start lg:px-12 py-4 lg:pt-4 pt-8">
                             <div className="mr-4 p-3 text-center">
                                 <span className="text-xl font-bold block tracking-wide">{comments}</span>
-                                <span className="text-sm">Comments</span>
+                                <span className="text-sm">{comments === 1 ? 'Comment' : 'Comments'}</span>
                             </div>
                             <div className="mr-4 p-3 text-center">
                                 <span className="text-xl font-bold block tracking-wide">{likes}</span>
-                                <span className="text-sm">Likes</span>
+                                <span className="text-sm">{likes === 1 ? 'Like' : 'Likes'}</span>
                             </div>
                         </div>
                     </div>

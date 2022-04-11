@@ -4,6 +4,7 @@ import UserModel from "../models/user.js";
 import Likes from "../models/likes.js";
 import Comment from "../models/comment.js";
 import validator from "email-validator";
+import Basket from "../models/basket.js";
 
 // Login and get token
 export const login = async (req, res) => {
@@ -84,7 +85,8 @@ export const getUserStats = async (req, res) => {
 /* Deleted the user and all the data that is linked to them */
 export const userDelete = async (req, res) => {
     try {
-        // TODO delete basket
+        // Delete basket items associated with the user
+        await Basket.deleteMany({userID: req.userID});
         // Delete likes associated with the user
         await Likes.deleteMany({userID: req.userID});
 
