@@ -41,6 +41,14 @@ export const register = async (req, res) => {
         // Check if email is valid
         if (!validator.validate(email)) return res.status(400).json("Invalid email");
 
+        // Check if username and password are not just spaces
+        try {
+            if (password.replace(/\s/g, '') === "" || username.replace(/\s/g, '') === "") {
+                return res.status(400).json('Username and password cannot be empty/spaces')
+            }
+        } catch (err) {/* Nothing here as error in the try actually means we are dealing with numbers */
+        }
+
         // Check if password is 8-32 characters long and username is 4-12 characters long
         if (password.length < 8) return res.status(400).json("Password too short");
         if (password.length > 32) return res.status(400).json("Password too long");
@@ -69,7 +77,7 @@ export const register = async (req, res) => {
     }
 };
 
-/* Get the number of comments user has written and liked*/
+/* Get the number of comments user has written and liked */
 export const getUserStats = async (req, res) => {
     try {
         Likes.countDocuments({userID: req.userID}, function (err, likesCount) {
@@ -129,6 +137,14 @@ export const userEdit = async (req, res) => {
 
         // Check if email is valid
         if (!validator.validate(body.newEmail)) return res.status(400).json("Invalid email");
+
+        // Check if username is not just spaces
+        try {
+            if (body.newUsername.replace(/\s/g, '') === "") {
+                return res.status(400).json('Username cannot be empty/spaces')
+            }
+        } catch (err) {/* Nothing here as error in the try actually means we are dealing with numbers */
+        }
 
         // Check if email or username already exist
         if (req.email !== body.newEmail) {

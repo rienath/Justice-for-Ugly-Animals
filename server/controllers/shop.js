@@ -37,12 +37,12 @@ export const editItem = async (req, res) => {
         const item = req.body;
         try {
 
-            // Check if price and stock are made of real l. Might give an error with number.
+            // Check if price and stock are not just spaces or empty. Might give an error with number.
             try {
                 if (item.price.replace(/\s/g, '') === "" || item.stock.replace(/\s/g, '') === "") {
                     return res.status(400).json('Price and stock cannot be empty')
                 }
-            } catch (err) {}
+            } catch (err) {/* Nothing here as error in the try actually means we are doing well! */}
 
             // Check for negative numbers
             if (item.price < 0 || item.stock < 0) return res.status(400).json('Price and stock cannot be negative')

@@ -11,6 +11,14 @@ export const createComment = async (req, res) => {
         if (comment.length < 1) return res.status(400).json('Too short');
         if (comment.length > 500) return res.status(400).json('Too long');
 
+        // Check if comment is not just spaces
+        try {
+            if (comment.replace(/\s/g, '') === "") {
+                return res.status(400).json('Comment cannot be empty/spaces')
+            }
+        } catch (err) {/* Nothing here as error in the try actually means we are dealing with numbers */
+        }
+
         // Make new comment. If replyID exists, get it's string
         const newComment = await Comment.create({
             userID: req.userID,
@@ -87,6 +95,14 @@ export const editComment = async (req, res) => {
     // Check if comment is longer than 1 and shorter than 500
     if (body.comment.length < 1) return res.status(400).json('Too short');
     if (body.comment.length > 500) return res.status(400).json('Too long');
+
+    // Check if comment is not just spaces
+    try {
+        if (body.comment.replace(/\s/g, '') === "") {
+            return res.status(400).json('Comment cannot be empty/spaces')
+        }
+    } catch (err) {/* Nothing here as error in the try actually means we are dealing with numbers */
+    }
 
     // If comment not found, return 404
     if (!comment) {

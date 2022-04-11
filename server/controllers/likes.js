@@ -1,7 +1,6 @@
 import Likes from '../models/likes.js';
 import Comments from '../models/comment.js';
 
-
 /* Like a comment (create). If it was liked, dislike the comment (remove) */
 export const likeComment = async (req, res) => {
     try {
@@ -22,8 +21,7 @@ export const likeComment = async (req, res) => {
                     }
                     // Otherwise, create a new like
                     await Likes.create({
-                        userID: req.userID,
-                        commentID: commentID,
+                        userID: req.userID, commentID: commentID,
                     })
                     return res.status(201).json({likes: likesCount + 1, liked: true});
                 });

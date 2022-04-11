@@ -3,7 +3,7 @@ import Shop from "../models/shop.js";
 import Basket from "../models/basket.js";
 import Purchase from "../models/purchase.js";
 
-/* Returns user basket by ID. Is used in various calls */
+/* Helper method that returns user basket by ID. Is used in various calls */
 export const getBasketMethod = async (userID) => {
     let basket = await Basket.find({userID});
     let data = JSON.parse(JSON.stringify(basket)); // Need to make a copy as cannot modify mongoose object
@@ -17,8 +17,12 @@ export const getBasketMethod = async (userID) => {
 
 /* Get the basket items */
 export const getBasket = async (req, res) => {
-    const data = await getBasketMethod(req.userID);
-    return res.status(200).json(data);
+    try {
+        const data = await getBasketMethod(req.userID);
+        return res.status(200).json(data);
+    } catch (err) {
+        return res.status(500).json('Server internal error')
+    }
 }
 
 /* Add item to basket. If it is already there, increment the quantity */
@@ -123,10 +127,11 @@ export const buy = async (req, res) => {
         // is 0 or less, remove.
         for (let i = 0; i < toBuy.length; i++) {
             let stock = await Shop.findById(toBuy[i].itemID);
-            let a = await Basket.find({itemID: toBuy[i].itemID, quantity: {$gt: stock.stock}}).updateMany({quantity: stock.stock});
+            let a = await Basket.find({
+                itemID: toBuy[i].itemID, quantity: {$gt: stock.stock}
+            }).updateMany({quantity: stock.stock});
             await Basket.deleteMany({itemID: toBuy[i].itemID, quantity: {$lt: 0}});
         }
-
 
         // Add purchases to purchase list
         await Purchase.create({userID: req.userID, items, quantities});
