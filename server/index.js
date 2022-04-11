@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from "mongoose";
 import api from "./routes/routes.js";
+import mongoSanitize from 'express-mongo-sanitize';
 
 // Environmental variables
 dotenv.config();
@@ -12,6 +13,12 @@ const app = express();
 app.use(express.json({limit: '10mb'}))
 app.use(express.urlencoded({limit: '10mb', extended: true}))
 app.use(cors());
+// Prevent NoSQL injections
+app.use(
+    mongoSanitize({
+        allowDots: true,
+    }),
+);
 
 // Routes
 app.use('/api', api);
