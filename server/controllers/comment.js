@@ -62,7 +62,6 @@ export const deleteComment = async (req, res) => {
 
         // If the user is not admin and does not own the comment, deny access
         if (req.privilege === 'user' && req.userID !== comment.userID) {
-            console.log('!');
             return res.status(403).json('Access denied');
         }
 
@@ -78,10 +77,7 @@ export const deleteComment = async (req, res) => {
         return res.status(204).json();
 
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({
-            err
-        })
+        return res.status(500).json("Server side error")
     }
 }
 
