@@ -7,6 +7,7 @@ const Header = ({user}) => {
 
     const navigate = useNavigate();
 
+
     // Hamburger menu on small screen
     let collapse = document.querySelector("#navbar-collapse");
     const handleHamburger = () => {
@@ -14,7 +15,8 @@ const Header = ({user}) => {
         collapse.classList.toggle("flex");
     };
 
-    // Redirects
+
+    // Redirect handlers
     const handleLogo = (e) => {
         e.preventDefault();
         navigate('/main')
@@ -41,9 +43,9 @@ const Header = ({user}) => {
         navigate('/main/profile');
     }
 
+
     return (<nav className="pattern-isometric pattern-indigo-50 pattern-bg-transparent pattern-opacity-80 py-2 md:py-4">
         <div className="container px-4 mx-auto md:flex md:items-center">
-
             <div className="flex justify-between items-center">
                 <a href="/#" onClick={handleLogo} className="font-bold text-xl text-indigo-600">Love for the
                     Uglies</a>
@@ -57,7 +59,6 @@ const Header = ({user}) => {
                     </svg>
                 </button>
             </div>
-
             <div className="hidden justify-around items-end md:flex flex-row md:flex-row md:ml-auto mt-3 md:mt-0"
                  id="navbar-collapse">
                 {user.username ? <>

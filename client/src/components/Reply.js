@@ -24,6 +24,7 @@ const Reply = ({replyID, replies, setReplies}) => {
         }).catch((err) => toast.error(err.response.data));
     }
 
+
     return (<><Toaster/>
         <div className="pt-2 text-gray-400 flex flex-row">
             <input placeholder="Write a reply..." value={newReply.comment} onChange={handleChangeEnter}

@@ -17,6 +17,7 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
     const [rating, setRating] = useState(); // Comment rating
     const [liked, setLiked] = useState(false); // Whether the comment is liked
 
+
     // Calculate how long ago the comment was made
     const showDateDifference = () => {
         const now = DateTime.now()
@@ -39,7 +40,7 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
         }
     }
 
-    // Effects
+
     // Get the rating of the comment and set it
     useEffect(() => {
         getLikes(commentID).then((res) => updateRating(res.data.likes, res.data.liked))
@@ -47,7 +48,6 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
     }, []);
 
 
-    // Handlers
     // Delete the comment
     const handleCommentDelete = async () => {
         deleteComment(commentID).then((data) => {
@@ -56,12 +56,6 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
             const arr = temp.filter((comment) => comment._id !== commentID);
             setAllComments(arr);
         }).catch((err) => toast.error(err.response.data));
-    }
-
-    // Update rating of the comment
-    const updateRating = (likes, liked) => {
-        setRating(likes);
-        setLiked(liked);
     }
 
     const handleRatingChange = async () => {
@@ -90,6 +84,13 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
     const handleEnter = (e) => {
         if (e.key === 'Enter') e.preventDefault()
     }
+
+    // Update rating of the comment
+    const updateRating = (likes, liked) => {
+        setRating(likes);
+        setLiked(liked);
+    }
+
 
     return (<><Toaster/>
         <div className="pt-1 pb-1.5">
@@ -122,10 +123,12 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
                         </div>
 
                         <div className="pt-0.5">
-                            {editing ? <textarea className="px-2 text-sm w-full leading-6" onChange={handleCommentChange}
-                                                 value={commentText} onKeyPress={handleEnter}/> : <div className="text-sm w-full leading-6">
-                                {commentText}
-                            </div>}
+                            {editing ?
+                                <textarea className="px-2 text-sm w-full leading-6" onChange={handleCommentChange}
+                                          value={commentText} onKeyPress={handleEnter}/> :
+                                <div className="text-sm w-full leading-6">
+                                    {commentText}
+                                </div>}
                         </div>
                     </div>
                 </div>

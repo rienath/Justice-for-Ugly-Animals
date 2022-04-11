@@ -1,6 +1,6 @@
 import {IoAddCircleOutline} from "react-icons/io5";
 import React, {useState} from "react";
-import {addShopItem, editComment} from "../api";
+import {addShopItem} from "../api";
 import toast, {Toaster} from "react-hot-toast";
 
 /* A component responsible for adding a new item in the shop */
@@ -8,6 +8,7 @@ const ShopAddItem = ({allItems, setAllItems}) => {
 
     const [adding, setAdding] = useState(false); // True if we are in editing regime
     const [item, setItem] = useState({name: '', description: '', stock: undefined, price: undefined});
+
 
     // Edit the comment
     const handleItemAdding = async () => {
@@ -23,6 +24,7 @@ const ShopAddItem = ({allItems, setAllItems}) => {
             setAdding(!adding);
         }
     }
+
 
     // Change handlers
     const handleNameChange = (e) => {

@@ -4,16 +4,18 @@ import Comment from "./Comment";
 import {getComments} from "../api";
 import toast, {Toaster} from "react-hot-toast";
 
-/* Component with the comments section */
+/* Component with the comments section (all comments) */
 const Comments = ({user}) => {
 
     const [allComments, setAllComments] = useState([]);
+
 
     // Get all comments
     useEffect(() => {
         getComments().then((res) => setAllComments(res.data.allComments))
             .catch((err) => toast.error(err.response.data));
     }, []);
+
 
     // Display new comment input and all comments
     return (<><Toaster/>

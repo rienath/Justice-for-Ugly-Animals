@@ -11,11 +11,13 @@ const Shop = ({user}) => {
     const [basket, setBasket] = useState([]); // All basket items
     const [basketPrice, setBasketPrice] = useState(0); // Price of the basket
 
+
     // Get all shop items from server and set them
     useEffect(() => {
         getAllItems().then((res) => setAllItems(res.data))
             .catch((err) => toast.error(err.response.data));
     }, []);
+
 
     // Get all basket items of user from server and set them
     useEffect(() => {
@@ -31,6 +33,7 @@ const Shop = ({user}) => {
         setBasketPrice(price);
     }, [basket]);
 
+
     const handlePay = async () => {
         // Count how many items in basket (needed to check whether our frontend basket is outdated compared to backend)
         let itemsInBasket = 0;
@@ -45,6 +48,7 @@ const Shop = ({user}) => {
             toast.error(err.response.data.error);
         });
     }
+
 
     return (<><Toaster/>
         <div>

@@ -6,9 +6,7 @@ import toast, {Toaster} from 'react-hot-toast';
 
 const Landing = () => {
 
-    const initialFormState = {
-        email: '', username: '', password: ''
-    };
+    const initialFormState = {email: '', username: '', password: ''};
     const [isRegister, setIsRegister] = useState(false);
     const [formData, setFormData] = useState(initialFormState);
     const navigate = useNavigate();
@@ -16,8 +14,8 @@ const Landing = () => {
 
     // Register/login handler
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent refreshing
-        if (isRegister) {
+        e.preventDefault();
+        if (isRegister) { // Register user
             api.register(formData)
                 .then(({data}) => {
                     localStorage.setItem("token", data.result);
@@ -26,7 +24,7 @@ const Landing = () => {
                 .catch((err) => {
                     toast.error(err.response.data)
                 })
-        } else {
+        } else { // Login user
             api.login({email: formData.email, password: formData.password})
                 .then(({data}) => {
                     localStorage.setItem("token", data.result);
@@ -52,10 +50,7 @@ const Landing = () => {
     // If user logged in, take them to main page
     useEffect(() => {
         const token = localStorage.getItem("token");
-
-        if (token) {
-            navigate('/main');
-        }
+        if (token) navigate('/main');
     }, []);
 
 

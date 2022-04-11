@@ -1,4 +1,3 @@
-// TODO when 1 comment or like, remove 's'
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {deleteUser, getUserStats, updateUser} from "../api";
@@ -8,25 +7,26 @@ import toast, {Toaster} from "react-hot-toast";
 const Profile = ({user, setUser}) => {
 
     const navigate = useNavigate();
-
     const [edit, setEdit] = useState(false);
     const [deleteProfile, setDeleteProfile] = useState(false);
     const [credentials, setCredentials] = useState({username: '', email: ''});
     const [likes, setLikes] = useState(0)
     const [comments, setComments] = useState(0)
 
+
     // Set comments and likes counts
     useEffect(() => {
         getUserStats().then((res) => {
             setLikes(res.data.likes);
             setComments(res.data.comments);
-        });
+        }).catch((err) => toast.error(err.response.data));
     }, []);
 
     // Set username and email when they are changed
     useEffect(() => {
         setCredentials({username: user.username, email: user.email});
     }, [user]);
+
 
     // Click handlers
     const handleEdit = async (e) => {
@@ -67,6 +67,7 @@ const Profile = ({user, setUser}) => {
     const handleEnter = (e) => {
         if (e.key === 'Enter') e.preventDefault()
     }
+
 
     return (<div
         className="mx-auto px-4 pattern-isometric pattern-indigo-50 pattern-bg-transparent pattern-opacity-80 h-full min-h-screen">

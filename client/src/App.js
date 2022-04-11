@@ -1,6 +1,3 @@
-// TODO login max size (backend and front handling)
-// TODO password min size
-
 import React, {useEffect, useState} from 'react';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Landing from "./components/Landing";

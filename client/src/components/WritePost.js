@@ -9,6 +9,7 @@ const WritePost = ({allComments, setAllComments}) => {
         comment: '', replyID: '',
     });
 
+
     // Change the comment value
     const handleChange = (e) => {
         setNewPost({...newPost, comment: e.target.value});
@@ -25,16 +26,15 @@ const WritePost = ({allComments, setAllComments}) => {
         setNewPost({...newPost, comment: ''});
     }
 
+
     return (<><Toaster/>
         <div className="px-2 md:px-16 pt-5 text-gray-400">
             <div className="border border-green-200 p-2 rounded-full flex flex-row h-full bg-green-50">
                 <input placeholder="Write a comment..." value={newPost.comment} onChange={handleChange}
                        onChange={handleChange}
                        onKeyPress={e => { // Handle pressing enter
-                           if (e.key === 'Enter') {
-                               handleCommentSubmit().then(r => {
-                               });
-                           }
+                           if (e.key === 'Enter') handleCommentSubmit().then(r => {
+                           });
                        }}
                        className="px-3 overflow-hidden overscroll-contain resize-auto text-black flex-grow border border-green-150 ml-4 mr-2 rounded-md"/>
                 <button onClick={handleCommentSubmit}
