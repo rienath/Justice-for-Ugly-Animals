@@ -19,7 +19,7 @@ const Comments = ({user}) => {
 
     // Display new comment input and all comments
     return (<><Toaster/>
-        <div className="pattern-isometric pattern-indigo-50 pattern-bg-transparent pattern-opacity-80">
+        <div className="h-screen pattern-isometric pattern-indigo-50 pattern-bg-transparent pattern-opacity-80">
             <WritePost allComments={allComments} setAllComments={setAllComments}/>
             <div className="px-2 md:px-16 pt-4 round-full text-black">
                 {allComments.map((comment) => (<Comment key={comment._id} comment={comment} allComments={allComments}
