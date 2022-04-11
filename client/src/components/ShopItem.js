@@ -49,20 +49,25 @@ const ShopItem = ({initialItem, user, basket, setBasket}) => {
         setItem({...item, price: e.target.value});
     }
 
+    // Do not make new line on enter
+    const handleEnter = (e) => {
+        if (e.key === 'Enter') e.preventDefault()
+    }
+
     return (<div className="bg-white py-4 px-4 shadow-xl rounded-lg my-4 mx-4">
         <div className="flex flex-row px-2 items-center">
             {editing ? <>
                 <div className="text-lg font-semibold pr-5 break-words min-w-min">
                     <textarea className="text-l text-center w-16" placeholder={'Price'} value={item.price}
-                              onChange={handlePriceChange}/>
+                              onChange={handlePriceChange} onKeyPress={handleEnter}/>
                 </div>
                 <div className="flex flex-col justify-start w-full">
                     <textarea className="font-semibold text-lg pl-2" placeholder={'Name'} value={item.name}
-                              onChange={handleNameChange}/>
+                              onChange={handleNameChange} onKeyPress={handleEnter}/>
                     <textarea className="italic text-xs text-gray-500 pl-2" placeholder={'Stock'} value={item.stock}
-                              onChange={handleStockChange}/>
+                              onChange={handleStockChange} onKeyPress={handleEnter}/>
                     <textarea className="text-md pl-2" placeholder={'Description'} value={item.description}
-                              onChange={handleDescriptionChange}/>
+                              onChange={handleDescriptionChange} onKeyPress={handleEnter}/>
                 </div>
             </> : <>
                 <div className="text-lg font-semibold pr-5 break-words min-w-min">

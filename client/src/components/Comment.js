@@ -5,6 +5,7 @@ import {RiDeleteBinFill} from "react-icons/ri";
 import {DateTime} from "luxon";
 import {deleteComment, editComment, getLikes, like} from "../api";
 import Reply from "./Reply";
+import toast, {Toaster} from "react-hot-toast";
 
 /* A single comment component */
 const Comment = ({comment, allComments, setAllComments, user}) => {
@@ -42,20 +43,19 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
     // Get the rating of the comment and set it
     useEffect(() => {
         getLikes(commentID).then((res) => updateRating(res.data.likes, res.data.liked))
-            .then((err) => console.log(err));
+            .catch((err) => toast.error(err.response.data));
     }, []);
 
 
     // Handlers
     // Delete the comment
     const handleCommentDelete = async () => {
-        const data = await deleteComment(commentID);
-        const temp = allComments.slice();
-        // Delete the comment
-        const arr = temp.filter((comment) => comment._id !== commentID);
-        setAllComments(arr);
-        // TODO: get error messages
-        console.log(data.data);
+        deleteComment(commentID).then((data) => {
+            const temp = allComments.slice();
+            // Delete the comment
+            const arr = temp.filter((comment) => comment._id !== commentID);
+            setAllComments(arr);
+        }).catch((err) => toast.error(err.response.data));
     }
 
     // Update rating of the comment
@@ -65,19 +65,20 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
     }
 
     const handleRatingChange = async () => {
-        const response = await like(commentID);
-        console.log(response.data);
-        updateRating(response.data.likes, response.data.liked)
+        like(commentID).then((response) => {
+            updateRating(response.data.likes, response.data.liked)
+        }).catch((err) => toast.error(err.response.data));
     }
 
     // Edit the comment
     const handleCommentEdit = async () => {
-        // TODO get error message and keep old comment if did not work
-        // Mystery
         if (editing) {
-            const data = await editComment({_id: comment._id, comment: commentText});
+            editComment({
+                _id: comment._id, comment: commentText
+            }).then(() => setEditing(!editing)).catch((err) => toast.error(err.response.data));
+        } else {
+            setEditing(!editing);
         }
-        setEditing(!editing);
     }
 
     // Change the comment value
@@ -85,55 +86,61 @@ const Comment = ({comment, allComments, setAllComments, user}) => {
         setCommentText(e.target.value);
     }
 
+    // Do not make new line on enter
+    const handleEnter = (e) => {
+        if (e.key === 'Enter') e.preventDefault()
+    }
 
-    return (<div className="pt-1 pb-1.5">
-        <div className="border border-green-200 bg-green-50 py-2 rounded-md">
-            <div className="flex flex-row items-center">
-                <div className="px-4">
-                    {liked ? <button onClick={handleRatingChange}
-                                     className="w-10 h-10 bg-yellow-400 align-middle hover:bg-yellow-300 duration-300">
-                        <h5 className="text-black text-sm text-center"><b>{rating}</b></h5>
-                    </button> : <button onClick={handleRatingChange}
-                                        className="w-10 h-10 bg-yellow-200 align-middle hover:bg-yellow-300 duration-300">
-                        <h5 className="text-black text-sm text-center"><b>{rating}</b></h5>
-                    </button>}
-                </div>
-
-                <div className="w-full">
-                    <div className="flex justify-between">
-                        <h5 className="text-black text-sm mb-1"><b>{comment.from}</b> {showDateDifference()} </h5>
-                        {// Show edit and delete buttons only the user who made the comment
-                            user._id === comment.userID || user.privilege === 'admin' ? <div>
-                                <button onClick={handleCommentEdit}
-                                        className="p-1 w-fit mx-1 text-indigo-600 text-center align-middle border border-solid border-indigo-600 rounded-full hover:bg-indigo-600 hover:text-white transition-colors duration-300">
-                                    <MdModeEditOutline/>
-                                </button>
-                                <button onClick={handleCommentDelete}
-                                        className="p-1 w-fit mx-1 text-red-500 text-center align-middle border border-solid border-red-500 rounded-full hover:bg-red-500 hover:text-white transition-colors duration-300">
-                                    <RiDeleteBinFill/>
-                                </button>
-                            </div> : <></>}
+    return (<><Toaster/>
+        <div className="pt-1 pb-1.5">
+            <div className="border border-green-200 bg-green-50 py-2 rounded-md">
+                <div className="flex flex-row items-center">
+                    <div className="px-4">
+                        {liked ? <button onClick={handleRatingChange}
+                                         className="w-10 h-10 bg-yellow-400 align-middle hover:bg-yellow-300 duration-300">
+                            <h5 className="text-black text-sm text-center"><b>{rating}</b></h5>
+                        </button> : <button onClick={handleRatingChange}
+                                            className="w-10 h-10 bg-yellow-200 align-middle hover:bg-yellow-300 duration-300">
+                            <h5 className="text-black text-sm text-center"><b>{rating}</b></h5>
+                        </button>}
                     </div>
 
-                    <div className="pt-0.5">
-                        {editing ? <textarea className="text-sm w-full leading-6" onChange={handleCommentChange}
-                                             value={commentText}/> : <div className="text-sm w-full leading-6">
-                            {commentText}
-                        </div>}
+                    <div className="w-full">
+                        <div className="flex justify-between">
+                            <h5 className="text-black text-sm mb-1"><b>{comment.from}</b> {showDateDifference()} </h5>
+                            {// Show edit and delete buttons only the user who made the comment
+                                user._id === comment.userID || user.privilege === 'admin' ? <div>
+                                    <button onClick={handleCommentEdit}
+                                            className="p-1 w-fit mx-1 text-indigo-600 text-center align-middle border border-solid border-indigo-600 rounded-full hover:bg-indigo-600 hover:text-white transition-colors duration-300">
+                                        <MdModeEditOutline/>
+                                    </button>
+                                    <button onClick={handleCommentDelete}
+                                            className="p-1 w-fit mx-1 text-red-500 text-center align-middle border border-solid border-red-500 rounded-full hover:bg-red-500 hover:text-white transition-colors duration-300">
+                                        <RiDeleteBinFill/>
+                                    </button>
+                                </div> : <></>}
+                        </div>
+
+                        <div className="pt-0.5">
+                            {editing ? <textarea className="text-sm w-full leading-6" onChange={handleCommentChange}
+                                                 value={commentText} onKeyPress={handleEnter}/> : <div className="text-sm w-full leading-6">
+                                {commentText}
+                            </div>}
+                        </div>
                     </div>
                 </div>
             </div>
+            {comment.replyID === '' ? <div className="pl-16 md:pl-24">
+                {/* If this is slave comment, it will have replyID, and we won't need to display replies*/}
+                <Reply replyID={comment._id} replies={replies} setReplies={setReplies}/>
+                <div className="py-4">
+                    {/* Send replies as comments as we want child comments to update in the same way */}
+                    {replies.map((reply) => (<Comment key={reply._id} comment={reply} allComments={replies}
+                                                      setAllComments={setReplies} user={user}/>))}
+                </div>
+            </div> : <></>}
         </div>
-        {comment.replyID === '' ? <div className="pl-16 md:pl-24">
-            {/* If this is slave comment, it will have replyID, and we won't need to display replies*/}
-            <Reply replyID={comment._id} replies={replies} setReplies={setReplies}/>
-            <div className="py-4">
-                {/* Send replies as comments as we want child comments to update in the same way */}
-                {replies.map((reply) => (<Comment key={reply._id} comment={reply} allComments={replies}
-                                                  setAllComments={setReplies} user={user}/>))}
-            </div>
-        </div> : <></>}
-    </div>)
+    </>)
 }
 
 export default Comment;

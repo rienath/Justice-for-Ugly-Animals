@@ -67,6 +67,11 @@ const Profile = ({user, setUser}) => {
         setCredentials({...credentials, email: e.target.value});
     }
 
+    // Do not make new line on enter
+    const handleEnter = (e) => {
+        if (e.key === 'Enter') e.preventDefault()
+    }
+
     return (<div
         className="mx-auto px-4 pattern-isometric pattern-indigo-50 pattern-bg-transparent pattern-opacity-80 h-full min-h-screen">
         <Toaster/>
@@ -110,9 +115,9 @@ const Profile = ({user, setUser}) => {
                     {edit ? <>
                             <textarea onChange={handleUsernameChange}
                                       className="text-4xl font-semibold text-center leading-normal"
-                                      value={credentials.username}/>
+                                      value={credentials.username} onKeyPress={handleEnter}/>
                         <textarea onChange={handleEmailChange}
-                                  className="mt-10 text-center" value={credentials.email}/>
+                                  className="mt-10 text-center" value={credentials.email} onKeyPress={handleEnter}/>
                     </> : <>
                         <h3 className="text-4xl font-semibold leading-normal">{credentials.username}</h3>
                         <div className="mt-10">{credentials.email}</div>

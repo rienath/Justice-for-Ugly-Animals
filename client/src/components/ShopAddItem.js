@@ -42,6 +42,11 @@ const ShopAddItem = ({allItems, setAllItems}) => {
         setItem({...item, price: e.target.value});
     }
 
+    // Do not make new line on enter
+    const handleEnter = (e) => {
+        if (e.key === 'Enter') e.preventDefault()
+    }
+
 
     return (<>
         {!adding ? <div className="flex justify-center">
@@ -54,15 +59,15 @@ const ShopAddItem = ({allItems, setAllItems}) => {
                 <>
                     <div className="text-lg font-semibold pr-5 break-words min-w-min">
                         <textarea className="text-l text-center w-16" placeholder={'Price'} value={item.price}
-                                  onChange={handlePriceChange}/>
+                                  onChange={handlePriceChange} onKeyPress={handleEnter}/>
                     </div>
                     <div className="flex flex-col justify-start w-full">
                         <textarea className="font-semibold text-lg pl-1" placeholder={'Name'} value={item.name}
-                                  onChange={handleNameChange}/>
+                                  onChange={handleNameChange} onKeyPress={handleEnter}/>
                         <textarea className="italic text-xs text-gray-500 pl-1" placeholder={'Stock'} value={item.stock}
-                                  onChange={handleStockChange}/>
+                                  onChange={handleStockChange} onKeyPress={handleEnter}/>
                         <textarea className="text-md pl-1" placeholder={'Description'} value={item.description}
-                                  onChange={handleDescriptionChange}/>
+                                  onChange={handleDescriptionChange} onKeyPress={handleEnter}/>
                     </div>
                 </>
                 <div className="flex justify-end text-lg font-semibold w-full">

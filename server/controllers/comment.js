@@ -7,6 +7,10 @@ export const createComment = async (req, res) => {
     try {
         const {comment, replyID} = req.body;
 
+        // Check if comment is longer than 1 and shorter than 500
+        if (comment.length < 1) return res.status(400).json('Too short');
+        if (comment.length > 500) return res.status(400).json('Too long');
+
         // Make new comment. If replyID exists, get it's string
         const newComment = await Comment.create({
             userID: req.userID,
@@ -16,14 +20,9 @@ export const createComment = async (req, res) => {
             replyID: replyID ? replyID : '',
         })
 
-        return res.status(201).json({
-            newComment
-        })
+        return res.status(201).json({newComment})
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({
-            err
-        })
+        return res.status(500).json('Server internal error')
     }
 }
 
@@ -37,8 +36,7 @@ export const getComments = async (req, res) => {
         }
         return res.status(200).json({allComments});
     } catch (err) {
-        console.log(err);
-        return res.status(500).json({err});
+        return res.status(500).json('Server internal error');
     }
 }
 
@@ -51,13 +49,13 @@ export const deleteComment = async (req, res) => {
 
         // If comment not found, return 404
         if (!comment) {
-            return res.status(404).json({message: 'Comment not found'});
+            return res.status(404).json('Comment not found');
         }
 
         // If the user is not admin and does not own the comment, deny access
         if (req.privilege === 'user' && req.userID !== comment.userID) {
             console.log('!');
-            return res.status(403).json({message: 'Access denied'});
+            return res.status(403).json('Access denied');
         }
 
         // Delete everything associated with the comment
@@ -86,17 +84,17 @@ export const editComment = async (req, res) => {
     const filter = {_id: body._id};
     const comment = await Comment.findOne(filter);
 
+    // Check if comment is longer than 1 and shorter than 500
+    if (body.comment.length < 1) return res.status(400).json('Too short');
+    if (body.comment.length > 500) return res.status(400).json('Too long');
+
     // If comment not found, return 404
     if (!comment) {
-        return res.status(404).json({message: 'Comment not found'});
+        return res.status(404).json('Comment not found');
     }
     // If the user is not admin and does not own the comment, deny access
     else if (req.privilege === 'user' && req.userID !== comment.userID) {
-        return res.status(403).json({message: 'Access denied'});
-    }
-    // If new comment is empty
-    else if (body.comment === '') {
-        return res.status(400).json({message: 'Comment cannot be empty'});
+        return res.status(403).json('Access denied');
     }
 
     // Update the comment
