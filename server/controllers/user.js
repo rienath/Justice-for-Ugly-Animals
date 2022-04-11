@@ -131,7 +131,7 @@ export const userEdit = async (req, res) => {
         // If credentials are the same, return same token
         if (req.email === body.newEmail && req.username === body.newUsername) {
             return res.status(200).json(jwt.sign({
-                email: req.email, username: req.username, privilege: req.privilege, _id: req._id
+                email: req.email, username: req.username, privilege: req.privilege, _id: req.userID,
             }, process.env.JWT_SECRET, {expiresIn: "24h"}));
         }
 
