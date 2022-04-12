@@ -7,7 +7,7 @@ that think that eating vegetables of weird shapes is ok, that it is ok to have p
 
 **Express**
 
-**React** with Tailwind CSS.
+**React** with Tailwind CSS
 
 **Node.js**
 
